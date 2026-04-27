@@ -1,0 +1,39 @@
+{
+  "name": "ptyai",
+  "version": "0.1.0",
+  "description": "MCP server that gives AI agents a persistent PTY with full VT100/ANSI emulation",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "ptyai": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "install-mcp": "node dist/index.js install",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["mcp", "pty", "terminal", "claude", "claude-code", "ai-agent"],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@xterm/headless": "^5.5.0",
+    "node-pty": "^1.0.0",
+    "uuid": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ]
+}

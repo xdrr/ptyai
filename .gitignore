@@ -1,0 +1,6 @@
+# npm artifacts
+dist/
+node_modules/
+
+# agentic settings
+.claude/
