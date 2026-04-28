@@ -86,6 +86,9 @@ export async function runCLI(args: string[]): Promise<void> {
     case "install":
       await cmdInstall(args.slice(1));
       break;
+    case "uninstall":
+      await cmdInstall(["--uninstall", ...args.slice(1)]);
+      break;
     case "--version":
     case "-v":
       printVersion();
@@ -107,16 +110,17 @@ export function printHelp(): void {
 ${bold("ptyai")} — persistent PTY sessions for Claude Code
 
 ${bold("Usage:")}
-  ptyai              Start the MCP server (for mcpServers config)
-  ptyai install      Configure Claude Code to use ptyai globally
-  ptyai install --project   Register ptyai in .mcp.json for the current project
+  ptyai                    Start the MCP server (for mcpServers config)
+  ptyai install            Configure Claude Code to use ptyai globally
+  ptyai install --project  Register ptyai in .mcp.json for the current project
+  ptyai uninstall          Remove ptyai from global Claude Code config
+  ptyai uninstall --project  Remove ptyai from .mcp.json in the current project
 
-${bold("Install flags:")}
-  --project          Write .mcp.json in the current directory instead of global install
+${bold("Install/uninstall flags:")}
+  --project          Write/remove .mcp.json in the current directory instead of global
   --dry-run          Show what would change without writing anything
-  --uninstall        Remove ptyai from the relevant config
-  --local            Use local dist/ path instead of npx ptyai
-  --force            Overwrite even if ptyai is already configured
+  --local            Use local dist/ path instead of npx ptyai (install only)
+  --force            Overwrite even if ptyai is already configured (install only)
 `);
 }
 

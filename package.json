@@ -28,7 +28,14 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": ["mcp", "pty", "terminal", "claude", "claude-code", "ai-agent"],
+  "keywords": [
+    "mcp",
+    "pty",
+    "terminal",
+    "claude",
+    "claude-code",
+    "ai-agent"
+  ],
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
