@@ -2,6 +2,8 @@
 
 An MCP server that gives AI agents (namely, Claude Code) a persistent PTY (pseudo-terminal) with full VT100/ANSI/xterm emulation. Replaces one-shot `Bash()` tool calls with a persistent terminal that supports interactive applications.
 
+![demo](assets/demo.gif)
+
 ## Features
 
 - **Persistent sessions** — UUID-based, survive across multiple tool calls
