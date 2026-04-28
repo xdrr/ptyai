@@ -73,7 +73,8 @@ persistent PTY sessions with full VT100/xterm emulation.
 4. \`pty_read(session_id)\` — inspect the rendered screen
 5. \`pty_kill(session_id)\` — clean up when done
 
-\`pty_write\` with \`wait_for\` combines write + wait in one round-trip.
+\`pty_write\` with \`wait_for\` combines write + wait in one round-trip; also accepts \`timeout_ms\`, \`settle_ms\`,
+and \`include_screen: false\` to skip the screen payload and save tokens.
 Named keys (\`ctrl+c\`, \`tab\`, arrow keys, \`f1\`–\`f12\`, etc.) go through \`pty_sendkey\`.
 ${MARKER_END}`;
 

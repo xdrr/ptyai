@@ -1,6 +1,6 @@
 # ptyai
 
-An MCP server that gives AI agents (namely, Claude Code) a persistent PTY (pseudo-terminal) with full VT100/ANSI/xterm emulation. Replaces one-shot `Bash()/Shell()` tool calls with a persistent terminal that supports interactive applications.
+An MCP server that gives AI agents (namely, Claude Code) a persistent PTY (pseudo-terminal) with full VT100/ANSI/xterm emulation. Replaces one-shot `Bash()` tool calls with a persistent terminal that supports interactive applications.
 
 ## Features
 
@@ -98,7 +98,7 @@ Add to `.mcp.json` in your project root:
 ### Local development
 
 ```bash
-git clone <repo>
+git clone https://github.com/xdrr/ptyai
 cd ptyai
 npm install
 npm run build
@@ -133,12 +133,22 @@ Create a new PTY session. Returns a `session_id` used by all other tools.
 | `scrollback` | number | 1000 | Scrollback buffer size |
 
 ### `pty_write`
-Send raw text or escape sequences to the PTY stdin.
+Send raw text or escape sequences to the PTY stdin. Optionally waits for output, combining `pty_write` + `pty_wait` in a single round-trip.
 
 Use `\r` for Enter, `\x03` for Ctrl+C, `\x1B` for Escape. For named keys, use `pty_sendkey`.
 
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `input` | string | — | Text or escape sequences to write |
+| `wait_for` | string | — | Regex to wait for after writing. Uses `since_generation` internally so stale screen content never causes a false match |
+| `timeout_ms` | number | 10000 | Max wait time in ms (only used when waiting) |
+| `settle_ms` | number | 300 | ms of silence that counts as settled (only used when waiting) |
+| `include_screen` | boolean | true | Include rendered screen in response when waiting. Set to `false` to save tokens when you only need `matched`/`timed_out`/`generation` |
+
 ### `pty_sendkey`
-Send a named special key. Examples:
+Send one or more named special keys. Use `key` for a single key or `keys` (array) to send multiple in one call.
+
+Examples:
 - `ctrl+c` — interrupt (SIGINT)
 - `ctrl+d` — EOF
 - `ctrl+z` — suspend (SIGTSTP)
@@ -154,11 +164,18 @@ Use `pty_list_keys` to see all supported names.
 ### `pty_read`
 Read the current rendered terminal screen.
 
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `include_scrollback` | boolean | false | Include scrollback history in the response |
+| `scrollback_lines` | number | all | Number of most-recent scrollback lines to return (only used when `include_scrollback: true`) |
+
 Returns:
 - `screen` — visible rows as plain text (rows joined by `\n`)
 - `cursor_row`, `cursor_col` — cursor position (0-indexed)
 - `cols`, `rows` — terminal dimensions
 - `alt_screen` — true when vim/htop/less alternate screen is active
+- `generation` — increments on every PTY output event; pass to `pty_wait`'s `since_generation` to avoid stale matches
+- `last_modified` — ISO timestamp of last PTY output
 - `scrollback` — historical lines from ring buffer (when `include_scrollback: true`)
 
 ### `pty_wait`
@@ -171,9 +188,11 @@ This is the key tool for interactive workflows:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `pattern` | string | — | Regex to match against screen text |
+| `pattern` | string | — | Regex to match against screen text. If omitted, waits for output to settle |
 | `timeout_ms` | number | 10000 | Max wait time in ms |
 | `settle_ms` | number | 300 | ms of silence = "settled" |
+| `since_generation` | number | — | Only resolve on output newer than this generation. Pass the `generation` from a prior `pty_read` or `pty_write` to avoid matching stale screen content |
+| `include_screen` | boolean | true | Include rendered screen in response. Set to `false` to save tokens in polling loops where you'll call `pty_read` separately |
 
 ### `pty_resize`
 Resize the terminal (sends SIGWINCH on Linux/macOS, ConPTY resize on Windows).
